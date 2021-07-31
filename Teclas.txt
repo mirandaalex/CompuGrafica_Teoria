@@ -1,4 +1,4 @@
-Escenario
+aaaaaaEscenario
 **************************************
 M - Cambia modo de poligonos
 N - Cambia modo de poligonos
@@ -35,8 +35,8 @@ Q - Empieza el show de luces
 E - Termina el show de luces
 I - Abre todas las puertas
 K - Cierra todas las puertas
-P - Abre las ventanas
-L - Cierra las ventanas
+L - Abre las ventanas
+P - Cierra las ventanas
 U - Abre los inodoros
 J - Cierra los inodoros
 R - Infla el globo

@@ -117,13 +117,13 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\include;$(ProjectDir)..\..\..\deps\glm;$(ProjectDir)..\..\..\deps\glfw\include;$(ProjectDir)..\..\..\deps\glad\include;$(ProjectDir)..\..\..\deps\assimp\include;$(ProjectDir)..\..\..\deps\irrKlang\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\include;$(ProjectDir)..\..\..\deps\glm;$(ProjectDir)..\..\..\deps\glfw\include;$(ProjectDir)..\..\..\deps\glad\include;$(ProjectDir)..\..\..\deps\assimp\include;$(ProjectDir)..\..\..\deps\irrKlang\include;$(ProjectDir)..\..\..\deps\freetype\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(ProjectDir)..\..\..\deps\glfw\lib\Debug;$(ProjectDir)..\..\..\\deps\glad\lib\Debug;$(ProjectDir)..\..\..\deps\assimp\lib\x64\Debug;$(ProjectDir)..\..\..\deps\irrKlang\lib\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>opengl32.lib;glad.lib;glfw3.lib;assimp-vc142-mtd.lib;irrKlang.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)..\..\..\deps\glfw\lib\Debug;$(ProjectDir)..\..\..\\deps\glad\lib\Debug;$(ProjectDir)..\..\..\deps\assimp\lib\x64\Debug;$(ProjectDir)..\..\..\deps\irrKlang\lib\Debug;$(ProjectDir)..\..\..\deps\freetype\lib\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>opengl32.lib;glad.lib;glfw3.lib;assimp-vc142-mtd.lib;irrKlang.lib;freetype.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -155,6 +155,7 @@
     <ClInclude Include="..\include\shader.h" />
     <ClInclude Include="..\include\shader_m.h" />
     <ClInclude Include="..\include\stb_image.h" />
+    <ClInclude Include="..\include\Text.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
