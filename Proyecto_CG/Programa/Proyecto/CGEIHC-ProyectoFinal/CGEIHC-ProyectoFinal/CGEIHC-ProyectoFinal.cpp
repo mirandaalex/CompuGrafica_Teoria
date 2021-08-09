@@ -103,6 +103,9 @@ float rotAjuste = 1.0f;
 glm::vec3 ufoPoss = glm::vec3(0.0f);
 float ufoAngle = 0.0f;
 float ufoRadio = 8.0f;
+bool ufoflag = true;
+bool changeUfo = true;
+float delayUfo = 0;
 
 //Sonido
 irrklang::ISoundEngine* SoundEngine = irrklang::createIrrKlangDevice();
@@ -296,7 +299,9 @@ int main()
 	//Model libros("models/libros.fbx");
 	//Model tv("models/tv.fbx");
 	//Model ps4("models/ps4.fbx");
-	
+	Model arboles("models/arboles.fbx");
+	Model abolesbk("models/arbolesbackt.fbx");
+	Model parrilla("models/parrilla.fbx");
 	// Modelos con animacion
 	Model character("models/character.fbx");
 	
@@ -343,12 +348,14 @@ int main()
 	unsigned int cubemapTexture = loadCubemap(faces);
 	//Personaje Animado pose inicial
 	glm::mat4 gBones[MAX_RIGGING_BONES];
+	glm::mat4 gBonesArbol[MAX_RIGGING_BONES];
 	//character.SetPose(0.0f, gBones, animType);
 	character.SetPose(0.0f, gBones);
 	float fps = (float)character.getFramerate();
 	fps *= 2;
 	int keys = (int)character.getNumFrames();
 	int animationCount = 0;
+
 
 	// Dibujar en malla de alambre
 	// glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -379,7 +386,7 @@ int main()
 			character.SetPose((float)animationCount, gBones);
 			elapsedTime = 0.0f;
 		}
-
+	
 		if (modoFiesta) {
 			if (tiempoPasadoFiesta > duracionLuces) {
 				colores_fiesta += 1;
@@ -420,11 +427,16 @@ int main()
 		if ((currentFrame - delayMusic) >= 0.5f) {
 			changeMusic = true;
 		}
+		//Espero de 0.5 s para prender o apagar movimiento ufo
+		if ((currentFrame - delayUfo) >= 0.5f) {
+			changeUfo = true;
+		}
 
 		if ((currentFrame - grassTime) >= 0.5f and walking==false){
 			walking = true;
 			sndGrass->setIsPaused(true);
 		}
+
 		if (sndGrass)
 			sndGrass->setPosition(irrklang::vec3df(positionCharacter.x, positionCharacter.y, positionCharacter.z));
 		if (snd)
@@ -463,6 +475,7 @@ int main()
 		}
 
 		glUseProgram(0);
+		//Animados
 		{
 			ourShader.use();
 			glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
@@ -482,6 +495,17 @@ int main()
 			// Dibujamos el modelo
 			character.Draw(ourShader);
 
+
+
+			model = glm::mat4(1.0f);
+			model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f)); // translate it down so it's at the center of the scene
+			model = glm::rotate(model, glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+			model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));	// it's a bit too big for our scene, so scale it down
+
+			ourShader.setMat4("model", model);
+
+			ourShader.setMat4("gBones", MAX_RIGGING_BONES, gBonesArbol);
+			//arboles.Draw(ourShader);
 		}
 
 		glUseProgram(0);
@@ -582,6 +606,16 @@ int main()
 			tv.Draw(basicPhongShader);
 			*/
 			opacos.Draw(basicPhongShader);
+			parrilla.Draw(basicPhongShader);
+			{
+				arboles.Draw(basicPhongShader);
+
+				glEnable(GL_BLEND);
+				glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+				abolesbk.Draw(basicPhongShader);
+			}
+
+		
 
 			// Puertas
 			// Phong de material brilloso
@@ -657,6 +691,25 @@ int main()
 			ventanasMovibles_brillosos.Draw(basicPhongShader);
 			model = glm::mat4(1.0f);
 			model = glm::rotate(model, glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+
+			//arboles
+			/*
+			model = glm::mat4(1.0f);
+			model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f)); // translate it down so it's at the center of the scene
+			model = glm::rotate(model, glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+			model = glm::rotate(model, glm::radians(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+			model = glm::rotate(model, glm::radians(0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+			model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));	// it's a bit too big for our scene, so scale it down
+			basicPhongShader.setMat4("model", model);
+			basicPhongShader.setVec4("MaterialAmbientColor", opaco.ambient);
+			basicPhongShader.setVec4("MaterialDiffuseColor", opaco.diffuse);
+			basicPhongShader.setVec4("MaterialSpecularColor", opaco.specular);
+			basicPhongShader.setFloat("transparency", opaco.transparency);
+			arboles.Draw(basicPhongShader);
+
+			glEnable(GL_BLEND);
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+			abolesback.Draw(basicPhongShader);*/
 		}
 
 		glUseProgram(0);
@@ -787,11 +840,14 @@ int main()
 		}
 		glUseProgram(0);
 		{
-			ufoAngle += 4;
-			if (ufoAngle >= 360)
-				ufoAngle = 0;
-			ufoPoss.x = ufoRadio * glm::cos(glm::radians(ufoAngle));
-			ufoPoss.z = ufoRadio * glm::sin(glm::radians(ufoAngle));
+			if (ufoflag == true){
+				ufoAngle += 4;
+
+				if (ufoAngle >= 360)
+					ufoAngle = 0;
+				ufoPoss.x = ufoRadio * glm::cos(glm::radians(ufoAngle));
+				ufoPoss.z = ufoRadio * glm::sin(glm::radians(ufoAngle));
+			}
 		}
 
 		// glfw: swap buffers 
@@ -954,7 +1010,16 @@ void processInput(GLFWwindow* window)
 		camera.ProcessMouseMovement(2,0);
 		}
 	}
-
+	if (glfwGetKey(window, GLFW_KEY_V) == GLFW_PRESS and changeUfo==true) {
+		changeUfo = false;
+		delayUfo = (float)glfwGetTime();
+		if (ufoflag == true) {
+			ufoflag = false;
+		}
+		else {
+			ufoflag = true;
+		}
+	}
 	if (glfwGetKey(window, GLFW_KEY_I) == GLFW_PRESS)
 	{
 		rotacionPuertas -= velocidadPuerta;
